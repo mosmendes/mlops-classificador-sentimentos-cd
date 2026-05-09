@@ -37,3 +37,11 @@ jobs:
           
       - name: Rodar testes automatizados
         run: pytest test_pipeline.py
+  deploy:
+    needs: build-and-test # Garante que o deploy só rode se o job "build-and-test" passar
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' # Opcional: deploy apenas da branch main
+    steps:
+      - name: Trigger Render Deploy
+        run: |
+          curl -f ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
