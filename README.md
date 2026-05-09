@@ -53,42 +53,56 @@ Este projeto implementa um fluxo de MLOps para classificação de sentimentos em
    - O notebook `notebooks/04_monitorar_fairness.ipynb` avalia a acurácia por grupos de tamanho de texto.
    - Essa etapa ajuda a detectar viés e instabilidade de desempenho.
 
-## Como executar
+## CI/CD Pipeline
 
-1. Criar e ativar um ambiente virtual:
-   ```bash
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   ```
+Este projeto utiliza uma estratégia de **Continuous Integration** (CI) e **Continuous Deployment** (CD) automático:
 
-2. Instalar dependências:
-   ```bash
-   pip install -r requirements.txt
-   ```
+### Continuous Integration (CI) com GitHub Actions
 
-3. Executar notebooks (opcionalmente via GitHub Actions):
-   ```bash
-   jupyter nbconvert --to notebook --execute notebooks/01_exploracao.ipynb --output 01_exploracao_output.ipynb --output-dir notebooks
-   jupyter nbconvert --to notebook --execute notebooks/02_pipeline_validacao.ipynb --output 02_pipeline_validacao_output.ipynb --output-dir notebooks
-   jupyter nbconvert --to notebook --execute notebooks/04_monitorar_fairness.ipynb --output 04_monitorar_fairness_output.ipynb --output-dir notebooks
-   ```
+O pipeline CI foi configurado no arquivo `.github/workflows/mlops.yml` e executa automaticamente:
 
-4. Executar testes:
-   ```bash
-   pytest test_pipeline.py
-   ```
+1. **Exploração e Limpeza de Dados**
+   - Executa o notebook `notebooks/01_exploracao.ipynb`
+   - Gera o arquivo `data/tweets_limpo.csv`
 
-5. Rodar o deploy Streamlit local:
-   ```bash
-   streamlit run app.py
-   ```
+2. **Treinamento e Validação do Modelo**
+   - Executa o notebook `notebooks/02_pipeline_validacao.ipynb`
+   - Produz os artefatos `model.joblib` e `vectorizer.joblib`
 
-## Observações
+3. **Monitoramento de Fairness**
+   - Executa o notebook `notebooks/04_monitorar_fairness.ipynb`
+   - Avalia o desempenho do modelo por categorias
 
-- O notebook `02_pipeline_validacao.ipynb` gera os arquivos `model.joblib` e `vectorizer.joblib` na raiz do projeto.
-- O `app.py` depende desses arquivos para fazer previsões.
-- O fluxo de CI do GitHub Actions executa notebooks e testes automaticamente em `main`.
-- Foi configurado o disparo manual das ações através do menu "Actions". Selecione o workflow CI Pipeline MLOPs e depois a branch 'main' pelo botão "run workflow".
+4. **Testes Automatizados**
+   - Executa `pytest test_pipeline.py`
+   - Valida a integridade dos artefatos, previsões e fairness
+
+O fluxo de CI é disparado automaticamente a cada push para a branch `main` ou pode ser executado manualmente através do menu "Actions" no GitHub (selecione o workflow "CI Pipeline MLOPs" e clique em "run workflow").
+
+### Continuous Deployment (CD) com Render
+
+A aplicação Streamlit é automaticamente deployada na plataforma **Render** através de CI/CD:
+
+1. **Configuração do Deploy**
+   - O arquivo `render.yaml` (ou configuração no dashboard do Render) define como a aplicação deve ser executada
+   - A aplicação Streamlit (`app.py`) é servida automaticamente
+
+2. **Fluxo Automático**
+   - Cada push para a branch `main` que passa nos testes do CI dispara automaticamente o deployment no Render
+   - A aplicação fica disponível em um URL público para acesso em tempo real
+   - Não é necessário executar comandos manuais de deploy
+
+3. **Acesso à Aplicação**
+   - Após o deploy bem-sucedido, a aplicação está disponível em um URL fornecido pelo Render
+   - Usuários podem fazer previsões de sentimento em tempo real sem necessidade de configuração local
+
+### Benefícios da Abordagem CI/CD
+
+- ✅ **Automação completa**: Nenhuma etapa manual necessária após push para `main`
+- ✅ **Qualidade garantida**: Testes executados automaticamente antes do deploy
+- ✅ **Deploy contínuo**: Mudanças validadas são imediatamente deployadas
+- ✅ **Rastreabilidade**: Todo commit é rastreado com seus testes e deploy status
+- ✅ **Monitoramento**: Fairness e desempenho monitorados a cada iteração
 
 ## Dependências principais
 
