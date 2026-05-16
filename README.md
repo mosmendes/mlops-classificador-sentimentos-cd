@@ -1,110 +1,375 @@
 # Projeto: Classificação de Sentimentos com MLOps
-Alunos:
+
+![CI/CD](https://github.com/mosmendes/mlops-classificador-sentimentos-cd/actions/workflows/mlops.yml/badge.svg)
+
+## Alunos
+
 - Márcio Leandro
 - Mônica Mendes
 - Rudi Modena
-Obs: Desenvolvido em aula da disciplina Teste de Software juntamente com o prof. Bruno Emílio.
 
-## Visão geral
+## Visão Geral
 
-Este projeto implementa um fluxo de MLOps para classificação de sentimentos em tweets. Ele inclui:
+Este projeto implementa um fluxo de MLOps para classificação de sentimentos em tweets utilizando Python, Scikit-Learn, Streamlit, Docker e GitHub Actions.
+
+A solução contempla desde a exploração e preparação dos dados até a automação de integração contínua (CI) e deploy contínuo (CD) utilizando containers Docker.
+
+O projeto inclui:
+
 - Exploração e limpeza de dados
-- Construção e validação de pipeline de ML
-- Deploy com Streamlit
+- Construção e validação de pipeline de Machine Learning
+- Aplicação de inferência com Streamlit
 - Testes automatizados
 - Monitoramento de fairness
+- Containerização com Docker
+- Pipeline CI/CD automatizado com GitHub Actions
+- Publicação automática da imagem Docker no Docker Hub
 
-## Estrutura do projeto
+---
 
-- `app.py` - aplicação Streamlit para previsão de sentimento em texto.
-- `data/tweets.csv` - dataset bruto de tweets.
-- `data/tweets_limpo.csv` - arquivo de dados limpos gerado pelo notebook de exploração.
-- `notebooks/01_exploracao.ipynb` - análise exploratória, limpeza de dados e geração de `tweets_limpo.csv`.
-- `notebooks/02_pipeline_validacao.ipynb` - validação, treinamento do modelo e exportação de `model.joblib` e `vectorizer.joblib`.
-- `notebooks/03_deploy_streamlit.ipynb` - exemplo de deploy e uso de Streamlit.
-- `notebooks/04_monitorar_fairness.ipynb` - análise de fairness e monitoramento de desempenho por tamanho de texto.
-- `test_pipeline.py` - testes automatizados para verificação de arquivos, previsões e fairness.
-- `.github/workflows/mlops.yml` - pipeline CI que executa notebooks e testes no GitHub Actions.
+# Estrutura do Projeto
 
-## Etapas do projeto
+```text
+.
+├── .github/
+│   └── workflows/
+│       └── mlops.yml
+├── data/
+│   ├── tweets.csv
+│   └── tweets_limpo.csv
+├── notebooks/
+│   ├── 01_exploracao.ipynb
+│   ├── 02_pipeline_validacao.ipynb
+│   ├── 03_deploy_streamlit.ipynb
+│   └── 04_monitorar_fairness.ipynb
+├── app.py
+├── Dockerfile
+├── model.joblib
+├── vectorizer.joblib
+├── requirements.txt
+├── test_pipeline.py
+└── README.md
+```
 
-1. Exploração de dados
-   - Carregar o dataset em `data/tweets.csv`.
-   - Realizar análise exploratória e limpeza no notebook `notebooks/01_exploracao.ipynb`.
-   - Salvar os dados limpos em `data/tweets_limpo.csv`.
+---
 
-2. Construção da pipeline
-   - Treinar e validar modelo no notebook `notebooks/02_pipeline_validacao.ipynb`.
-   - Gerar artefatos de inferência: `model.joblib` e `vectorizer.joblib`.
+# Descrição dos Arquivos
 
-3. Deploy
-   - Redeploy local com `app.py` ou usar `notebooks/03_deploy_streamlit.ipynb` como referência.
-   - `app.py` carrega `model.joblib` e `vectorizer.joblib` para fazer previsões em tempo real.
+- `app.py`  
+  Aplicação Streamlit responsável pela interface de previsão de sentimentos.
 
-4. Testes automatizados
-   - `test_pipeline.py` contém casos de teste para:
-     - existência dos artefatos de modelo
-     - transformações do vectorizer
-     - classificação de sentimentos
-     - validação dos dados limpos
-     - fairness por categorias de tamanho de texto
+- `Dockerfile`  
+  Arquivo de definição da imagem Docker da aplicação.
 
-5. Monitoramento
-   - O notebook `notebooks/04_monitorar_fairness.ipynb` avalia a acurácia por grupos de tamanho de texto.
-   - Essa etapa ajuda a detectar viés e instabilidade de desempenho.
+- `data/tweets.csv`  
+  Dataset bruto contendo tweets para treinamento.
 
-## CI/CD Pipeline
+- `data/tweets_limpo.csv`  
+  Dataset processado após limpeza e tratamento dos dados.
 
-Este projeto utiliza uma estratégia de **Continuous Integration** (CI) e **Continuous Deployment** (CD) automático:
+- `notebooks/01_exploracao.ipynb`  
+  Notebook de exploração, análise e limpeza dos dados.
 
-### Continuous Integration (CI) com GitHub Actions
+- `notebooks/02_pipeline_validacao.ipynb`  
+  Notebook responsável pelo treinamento, validação e exportação do modelo.
 
-O pipeline CI foi configurado no arquivo `.github/workflows/mlops.yml` e executa automaticamente:
+- `notebooks/03_deploy_streamlit.ipynb`  
+  Notebook com exemplos de deploy e execução da aplicação Streamlit.
 
-1. **Exploração e Limpeza de Dados**
-   - Executa o notebook `notebooks/01_exploracao.ipynb`
-   - Gera o arquivo `data/tweets_limpo.csv`
+- `notebooks/04_monitorar_fairness.ipynb`  
+  Notebook de monitoramento de fairness e desempenho do modelo.
 
-2. **Treinamento e Validação do Modelo**
-   - Executa o notebook `notebooks/02_pipeline_validacao.ipynb`
-   - Produz os artefatos `model.joblib` e `vectorizer.joblib`
+- `model.joblib`  
+  Modelo treinado para classificação de sentimentos.
 
-3. **Monitoramento de Fairness**
-   - Executa o notebook `notebooks/04_monitorar_fairness.ipynb`
-   - Avalia o desempenho do modelo por categorias
+- `vectorizer.joblib`  
+  Vetorizador utilizado para transformar os textos em features numéricas.
 
-4. **Testes Automatizados**
-   - Executa `pytest test_pipeline.py`
-   - Valida a integridade dos artefatos, previsões e fairness
+- `test_pipeline.py`  
+  Arquivo contendo testes automatizados do pipeline.
 
-O fluxo de CI é disparado automaticamente a cada push para a branch `main` ou pode ser executado manualmente através do menu "Actions" no GitHub (selecione o workflow "CI Pipeline MLOPs" e clique em "run workflow").
+- `.github/workflows/mlops.yml`  
+  Pipeline CI/CD executado automaticamente no GitHub Actions.
 
-### Continuous Deployment (CD) com Render
+---
 
-A aplicação Streamlit é automaticamente deployada na plataforma **Render** através de CI/CD:
+# Fluxo do Projeto
 
-1. **Configuração do Deploy**
-   - O arquivo `render.yaml` (ou configuração no dashboard do Render) define como a aplicação deve ser executada
-   - A aplicação Streamlit (`app.py`) é servida automaticamente
+## 1. Exploração e Limpeza de Dados
 
-2. **Fluxo Automático**
-   - Cada push para a branch `main` que passa nos testes do CI dispara automaticamente o deployment no Render
-   - A aplicação fica disponível em um URL público para acesso em tempo real
-   - Não é necessário executar comandos manuais de deploy
+Etapa responsável pela análise exploratória e preparação do dataset.
 
-3. **Acesso à Aplicação**
-   - Após o deploy bem-sucedido, a aplicação está disponível em um URL fornecido pelo Render
-   - Usuários podem fazer previsões de sentimento em tempo real sem necessidade de configuração local
+Principais atividades:
 
-### Benefícios da Abordagem CI/CD
+- Carregamento dos dados
+- Limpeza de texto
+- Tratamento de inconsistências
+- Geração do dataset processado
 
-- ✅ **Automação completa**: Nenhuma etapa manual necessária após push para `main`
-- ✅ **Qualidade garantida**: Testes executados automaticamente antes do deploy
-- ✅ **Deploy contínuo**: Mudanças validadas são imediatamente deployadas
-- ✅ **Rastreabilidade**: Todo commit é rastreado com seus testes e deploy status
-- ✅ **Monitoramento**: Fairness e desempenho monitorados a cada iteração
+Notebook utilizado:
 
-## Dependências principais
+```text
+notebooks/01_exploracao.ipynb
+```
+
+Arquivo gerado:
+
+```text
+data/tweets_limpo.csv
+```
+
+---
+
+## 2. Construção e Validação do Modelo
+
+Etapa de treinamento e validação do modelo de Machine Learning.
+
+Principais atividades:
+
+- Vetorização dos textos
+- Treinamento do modelo
+- Avaliação de métricas
+- Persistência dos artefatos
+
+Notebook utilizado:
+
+```text
+notebooks/02_pipeline_validacao.ipynb
+```
+
+Artefatos gerados:
+
+```text
+model.joblib
+vectorizer.joblib
+```
+
+---
+
+## 3. Aplicação Streamlit
+
+A aplicação Streamlit permite realizar previsões de sentimentos em tempo real.
+
+Arquivo principal:
+
+```text
+app.py
+```
+
+A aplicação carrega automaticamente:
+
+- `model.joblib`
+- `vectorizer.joblib`
+
+para executar inferências de sentimento.
+
+---
+
+## 4. Testes Automatizados
+
+Os testes automatizados garantem a integridade da pipeline e do modelo.
+
+Arquivo:
+
+```text
+test_pipeline.py
+```
+
+Os testes validam:
+
+- Existência dos artefatos
+- Transformações do vectorizer
+- Classificação de sentimentos
+- Integridade dos dados limpos
+- Fairness por tamanho de texto
+
+---
+
+## 5. Monitoramento de Fairness
+
+O notebook de monitoramento avalia possíveis vieses e diferenças de desempenho do modelo.
+
+Notebook utilizado:
+
+```text
+notebooks/04_monitorar_fairness.ipynb
+```
+
+O monitoramento considera:
+
+- Acurácia por tamanho de texto
+- Estabilidade do modelo
+- Possíveis desvios de comportamento
+
+---
+
+# Docker
+
+O projeto foi containerizado utilizando Docker para padronizar o ambiente de execução e automatizar o processo de deploy.
+
+## Build local da imagem
+
+```bash
+docker build -t classificador-sentimentos .
+```
+
+## Execução local
+
+```bash
+docker run -p 5000:5000 classificador-sentimentos
+```
+
+A aplicação ficará disponível em:
+
+```text
+http://localhost:5000
+```
+
+---
+
+# CI/CD Pipeline
+
+O projeto utiliza uma estratégia de Continuous Integration (CI) e Continuous Deployment (CD) utilizando GitHub Actions e Docker Hub.
+
+---
+
+## Continuous Integration (CI)
+
+O pipeline CI foi configurado no arquivo:
+
+```text
+.github/workflows/mlops.yml
+```
+
+O processo é executado automaticamente a cada push realizado na branch `main`.
+
+### Etapas executadas
+
+### 1. Exploração e Limpeza de Dados
+
+Execução automática do notebook:
+
+```text
+notebooks/01_exploracao.ipynb
+```
+
+---
+
+### 2. Treinamento e Validação do Modelo
+
+Execução automática do notebook:
+
+```text
+notebooks/02_pipeline_validacao.ipynb
+```
+
+Geração dos artefatos:
+
+- `model.joblib`
+- `vectorizer.joblib`
+
+---
+
+### 3. Monitoramento de Fairness
+
+Execução automática do notebook:
+
+```text
+notebooks/04_monitorar_fairness.ipynb
+```
+
+---
+
+### 4. Testes Automatizados
+
+Execução automática dos testes:
+
+```bash
+pytest test_pipeline.py
+```
+
+---
+
+# Continuous Deployment (CD)
+
+O processo de Continuous Deployment foi implementado utilizando Docker Hub.
+
+Após a conclusão bem-sucedida do pipeline de integração contínua, o workflow executa automaticamente:
+
+1. Build da imagem Docker
+2. Publicação da imagem no Docker Hub
+3. Disponibilização da aplicação para execução em qualquer ambiente Docker
+
+---
+
+## Publicação da Imagem Docker
+
+A imagem Docker é construída automaticamente utilizando o `Dockerfile` do projeto.
+
+Após o build, a imagem é publicada automaticamente no Docker Hub utilizando GitHub Actions.
+
+---
+
+## Secrets Configurados
+
+Para publicação segura da imagem Docker foram configurados os seguintes secrets no GitHub:
+
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
+
+---
+
+## Runner Utilizado
+
+Foi utilizado o runner hospedado do GitHub Actions:
+
+```text
+ubuntu-latest
+```
+
+Não foi necessária configuração de runner local.
+
+---
+
+# Execução da Aplicação via Docker Hub
+
+Após o deploy automático, a aplicação pode ser executada diretamente a partir do Docker Hub.
+
+## Download da imagem
+
+```bash
+docker pull mosmendes/classificador-sentimentos:latest
+```
+
+## Execução da aplicação
+
+```bash
+docker run -p 5000:5000 mosmendes/classificador-sentimentos:latest
+```
+
+A aplicação ficará disponível em:
+
+```text
+http://localhost:5000
+```
+
+---
+
+# Benefícios da Estratégia CI/CD
+
+- ✅ Automação completa do pipeline
+- ✅ Execução automática de notebooks
+- ✅ Execução automatizada de testes
+- ✅ Validação contínua do modelo
+- ✅ Publicação automática da imagem Docker
+- ✅ Reprodutibilidade do ambiente com containers
+- ✅ Deploy contínuo automatizado
+- ✅ Monitoramento contínuo de fairness
+- ✅ Rastreabilidade de alterações e builds
+
+---
+
+# Dependências Principais
 
 - pandas
 - scikit-learn
@@ -117,3 +382,24 @@ A aplicação Streamlit é automaticamente deployada na plataforma **Render** at
 - pytest
 - jupyter
 - nbconvert
+- docker
+
+---
+
+# Observação sobre CI/CD
+
+O processo de CI/CD foi implementado utilizando GitHub Actions devido à integração nativa com o repositório hospedado no GitHub, mantendo os mesmos conceitos de automação contínua solicitados na atividade.
+
+---
+
+# Repositórios
+
+## GitHub
+
+https://github.com/mosmendes/mlops-classificador-sentimentos-cd
+
+## Docker Hub
+
+https://hub.docker.com/
+
+```
